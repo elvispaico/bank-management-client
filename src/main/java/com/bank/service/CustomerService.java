@@ -1,12 +1,16 @@
 package com.bank.service;
 
 import com.bank.models.entity.Customer;
+import com.bank.models.request.CustomerSaveRequest;
+import com.bank.models.response.CustomerResponse;
+import com.bank.models.response.CustomerSaveResponse;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.List;
 
 public interface CustomerService {
 
-    List<Customer> findAll();
+    Single<List<CustomerResponse>> findAllCustomers();
 
-    Customer save(Customer customer);
+    Single<CustomerSaveResponse> save(CustomerSaveRequest request);
 }
