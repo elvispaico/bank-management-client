@@ -21,18 +21,14 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
 
     @Override
-    public Single<CustomerSaveResponse> save(CustomerSaveRequest request) {
+    public Single<Customer> save(CustomerSaveRequest request) {
         return Single.create(emitter -> {
             var optionalCustomer = customerRepository.findByNumDocument(request.getNumDocument());
             if (optionalCustomer.isPresent()) {
                 emitter.onError(new RuntimeException("ya existe valor"));
             } else {
                 var respose = customerRepository.save(mapRequestToEntity(request));
-                emitter.onSuccess(CustomerSaveResponse.builder()
-                        .numDocumet(respose.getNumDocument())
-                        .email(respose.getEmail())
-                        .fullname(respose.getFirstName().concat(" ").concat(respose.getLastName()))
-                        .build());
+                emitter.onSuccess(respose);
             }
         });
 

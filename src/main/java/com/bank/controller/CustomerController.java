@@ -2,8 +2,8 @@ package com.bank.controller;
 
 import com.bank.models.request.CustomerSaveRequest;
 import com.bank.models.response.CustomerResponse;
-import com.bank.models.response.CustomerSaveResponse;
 import com.bank.service.CustomerService;
+import com.bank.util.MessageResponse;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +21,13 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping
-    public Single<ResponseEntity<CustomerSaveResponse>> save(@RequestBody CustomerSaveRequest request) {
+    public Single<ResponseEntity<MessageResponse>> save(@RequestBody CustomerSaveRequest request) {
         return customerService.save(request)
                 .subscribeOn(Schedulers.io())
-                .map(value -> new ResponseEntity<>(value, HttpStatus.CREATED));
+                .map(value -> new ResponseEntity<>(
+                        new MessageResponse(HttpStatus.CREATED.value(),"Customer save success"),
+                        HttpStatus.CREATED)
+                );
 
     }
 
