@@ -1,6 +1,5 @@
 package com.bank.models.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Customer {
     @Id
     private String id;
+    private String name;
     private String firstName;
     private String lastName;
     private String numDocument;
