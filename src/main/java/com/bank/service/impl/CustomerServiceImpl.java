@@ -5,6 +5,7 @@ import com.bank.models.request.CustomerSaveRequest;
 import com.bank.models.response.CustomerResponse;
 import com.bank.repository.CustomerRepository;
 import com.bank.service.CustomerService;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,17 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public Single<Customer> update(CustomerSaveRequest request) {
+        return null;
+    }
+
+    @Override
+    public Maybe<CustomerResponse> findById(String id) {
+        var response = customerRepository.findById(id);
+        return response.map(customer -> Maybe.just(mapEntityToResponse(customer))).orElseGet(Maybe::empty);
+    }
+
+    @Override
     public Observable<CustomerResponse> findAllCustomers() {
         return Observable.fromIterable(mapEntityToResponse(customerRepository.findAll()));
     }
@@ -53,19 +65,23 @@ public class CustomerServiceImpl implements CustomerService {
 
     }
 
+    private CustomerResponse mapEntityToResponse(Customer customer) {
+        return CustomerResponse.builder()
+                .id(customer.getId())
+                .name(customer.getName())
+                .numDocument(customer.getNumDocument())
+                .codTypeDocument(customer.getCodTypeDocument())
+                .codTypeCustomer(customer.getCodTypeCustomer())
+                .address(customer.getAddress())
+                .email(customer.getEmail())
+                .phone(customer.getPhone())
+                .build();
+    }
+
     private List<CustomerResponse> mapEntityToResponse(List<Customer> listCustomers) {
 
         return listCustomers.stream()
-                .map(customer -> CustomerResponse.builder()
-                        .id(customer.getId())
-                        .name(customer.getName())
-                        .numDocument(customer.getNumDocument())
-                        .codTypeDocument(customer.getCodTypeDocument())
-                        .codTypeCustomer(customer.getCodTypeCustomer())
-                        .address(customer.getAddress())
-                        .email(customer.getEmail())
-                        .phone(customer.getPhone())
-                        .build()).collect(Collectors.toList());
+                .map(this::mapEntityToResponse).collect(Collectors.toList());
 
     }
 

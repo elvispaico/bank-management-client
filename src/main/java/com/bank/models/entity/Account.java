@@ -24,5 +24,4 @@ public class Account {
     private double commission;
     private int numMovimientos;
     private Date fecMovimiento;
-    private boolean status;
 }
