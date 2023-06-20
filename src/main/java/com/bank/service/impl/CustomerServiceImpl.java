@@ -3,7 +3,6 @@ package com.bank.service.impl;
 import com.bank.models.entity.Customer;
 import com.bank.models.request.CustomerSaveRequest;
 import com.bank.models.response.CustomerResponse;
-import com.bank.models.response.CustomerSaveResponse;
 import com.bank.repository.CustomerRepository;
 import com.bank.service.CustomerService;
 import io.reactivex.rxjava3.core.Single;
@@ -45,8 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private Customer mapRequestToEntity(CustomerSaveRequest request) {
         Customer customer = new Customer();
-        customer.setFirstName(request.getFirstName());
-        customer.setLastName(request.getLastName());
+        customer.setName(request.getName());
         customer.setNumDocument(request.getNumDocument());
         customer.setCodTypeDocument(request.getCodTypeDocument());
         customer.setCodTypeCustomer(request.getCodTypeCustomer());
@@ -63,8 +61,7 @@ public class CustomerServiceImpl implements CustomerService {
         return listCustomers.stream()
                 .map(customer -> CustomerResponse.builder()
                         .id(customer.getId())
-                        .firstName(customer.getFirstName())
-                        .lastName(customer.getLastName())
+                        .name(customer.getName())
                         .numDocument(customer.getNumDocument())
                         .codTypeDocument(customer.getCodTypeDocument())
                         .codTypeCustomer(customer.getCodTypeCustomer())

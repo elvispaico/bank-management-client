@@ -3,7 +3,7 @@ package com.bank.controller;
 import com.bank.models.request.CustomerSaveRequest;
 import com.bank.models.response.CustomerResponse;
 import com.bank.service.CustomerService;
-import com.bank.util.MessageResponse;
+import com.bank.models.response.MessageResponse;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import lombok.RequiredArgsConstructor;

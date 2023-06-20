@@ -6,8 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class CustomerSaveRequest {
-    private String firstName;
-    private String lastName;
+    private String name;
     private String numDocument;
     private String codTypeDocument;
     private String codTypeCustomer;
