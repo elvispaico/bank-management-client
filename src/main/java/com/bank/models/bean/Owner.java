@@ -10,6 +10,7 @@ import lombok.Data;
 public class Owner {
     private String id;
     private String name;
+    private String codTypeCustomer;
     private String numDocument;
     private String codTypeDocument;
 }

@@ -4,7 +4,6 @@ import com.bank.models.request.CustomerSaveRequest;
 import com.bank.models.response.CustomerResponse;
 import com.bank.models.response.MessageResponse;
 import com.bank.service.CustomerService;
-import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -32,7 +31,7 @@ public class CustomerController {
     }
 
     @GetMapping( value = "/{id}")
-    public Maybe<CustomerResponse> findById(@PathVariable String id) {
+    public Single<CustomerResponse> findById(@PathVariable String id) {
         return customerService.findById(id);
     }
 

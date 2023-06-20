@@ -20,8 +20,4 @@ public class Customer {
     private String numDocument;
     private String codTypeDocument;
     private String codTypeCustomer;
-    private String address;
-    private String email;
-    private String phone;
-
 }

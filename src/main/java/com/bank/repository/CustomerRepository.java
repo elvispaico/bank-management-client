@@ -1,14 +1,15 @@
 package com.bank.repository;
 
 import com.bank.models.entity.Customer;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 
 import java.util.Optional;
 
 @Repository
-public interface CustomerRepository extends MongoRepository<Customer, String> {
+public interface CustomerRepository extends ReactiveCrudRepository<Customer, String> {
 
-    Optional<Customer> findByNumDocument(String numDocument);
+    Flux<Customer> findByNumDocument(String numDocument);
 
 }

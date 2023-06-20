@@ -5,15 +5,11 @@ import com.bank.models.request.CustomerSaveRequest;
 import com.bank.models.response.CustomerResponse;
 import com.bank.repository.CustomerRepository;
 import com.bank.service.CustomerService;
-import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import reactor.core.publisher.Flux;
 
 @RequiredArgsConstructor
 @Service
@@ -23,32 +19,18 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Single<Customer> save(CustomerSaveRequest request) {
-        return Single.create(emitter -> {
-            var optionalCustomer = customerRepository.findByNumDocument(request.getNumDocument());
-            if (optionalCustomer.isPresent()) {
-                emitter.onError(new RuntimeException("ya existe valor"));
-            } else {
-                var respose = customerRepository.save(mapRequestToEntity(request));
-                emitter.onSuccess(respose);
-            }
-        });
-
+        return Single.fromPublisher(customerRepository.save(mapRequestToEntity(request)));
     }
 
     @Override
-    public Single<Customer> update(CustomerSaveRequest request) {
-        return null;
-    }
-
-    @Override
-    public Maybe<CustomerResponse> findById(String id) {
-        var response = customerRepository.findById(id);
-        return response.map(customer -> Maybe.just(mapEntityToResponse(customer))).orElseGet(Maybe::empty);
+    public Single<CustomerResponse> findById(String id) {
+        return Single.fromPublisher(customerRepository.findById(id))
+                .map(this::mapEntityToResponse);
     }
 
     @Override
     public Observable<CustomerResponse> findAllCustomers() {
-        return Observable.fromIterable(mapEntityToResponse(customerRepository.findAll()));
+        return Observable.fromPublisher(mapEntityToResponse(customerRepository.findAll()));
     }
 
     private Customer mapRequestToEntity(CustomerSaveRequest request) {
@@ -57,9 +39,6 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setNumDocument(request.getNumDocument());
         customer.setCodTypeDocument(request.getCodTypeDocument());
         customer.setCodTypeCustomer(request.getCodTypeCustomer());
-        customer.setEmail(request.getEmail());
-        customer.setAddress(Optional.ofNullable(request.getAddress()).orElse(""));
-        customer.setPhone(Optional.ofNullable(request.getPhone()).orElse(""));
 
         return customer;
 
@@ -72,16 +51,13 @@ public class CustomerServiceImpl implements CustomerService {
                 .numDocument(customer.getNumDocument())
                 .codTypeDocument(customer.getCodTypeDocument())
                 .codTypeCustomer(customer.getCodTypeCustomer())
-                .address(customer.getAddress())
-                .email(customer.getEmail())
-                .phone(customer.getPhone())
                 .build();
     }
 
-    private List<CustomerResponse> mapEntityToResponse(List<Customer> listCustomers) {
+    private Flux<CustomerResponse> mapEntityToResponse(Flux<Customer> listCustomers) {
 
-        return listCustomers.stream()
-                .map(this::mapEntityToResponse).collect(Collectors.toList());
+        return listCustomers.map(this::mapEntityToResponse);
+
 
     }
 
