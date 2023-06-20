@@ -5,6 +5,7 @@ import com.bank.models.request.CustomerSaveRequest;
 import com.bank.models.response.CustomerResponse;
 import com.bank.repository.CustomerRepository;
 import com.bank.service.CustomerService;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,12 +35,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Single<List<CustomerResponse>> findAllCustomers() {
-        return Single.create(emmiter -> {
-            var response = customerRepository.findAll();
-            emmiter.onSuccess(mapEntityToResponse(response));
-        });
-
+    public Observable<CustomerResponse> findAllCustomers() {
+        return Observable.fromIterable(mapEntityToResponse(customerRepository.findAll()));
     }
 
     private Customer mapRequestToEntity(CustomerSaveRequest request) {
