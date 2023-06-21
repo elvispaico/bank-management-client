@@ -10,6 +10,7 @@ import com.bank.models.response.CustomerResponse;
 import com.bank.repository.CustomerRepository;
 import com.bank.repository.ProductRepository;
 import com.bank.service.CustomerService;
+import com.bank.util.ParametrosDataDummy;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .hasElement()
                 .flatMap(customerExists -> {
                     if (customerExists) {
-                        return Mono.error(new AttributeException("customer exists"));
+                        return Mono.error(new AttributeException("Cliente ya existe"));
                     } else {
                         return customerRepository.save(mapRequestToEntity(request));
                     }
@@ -52,7 +53,18 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Observable<CustomerResponse> findAllCustomers() {
-        return Observable.fromPublisher(mapEntityToResponse(customerRepository.findAll()));
+
+        var response =  Observable.fromPublisher(customerRepository.findAll())
+                .toList()
+                .flatMap(customers -> {
+                   return Single.just(mapEntityToResponse(customers));
+                });
+
+        return  response
+                .toObservable()
+                .flatMap(customerResponses -> Observable.fromIterable(customerResponses));
+
+//        return Observable.fromPublisher(mapEntityToResponse(customerRepository.findAll()));
     }
 
     @Override
@@ -86,7 +98,6 @@ public class CustomerServiceImpl implements CustomerService {
                 .id(customer.getId())
                 .name(customer.getName())
                 .numDocument(customer.getNumDocument())
-                .codTypeDocument(customer.getCodTypeDocument())
                 .codTypeCustomer(customer.getCodTypeCustomer())
                 .products(lisProducts)
                 .build();
@@ -96,9 +107,13 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = new Customer();
         customer.setName(request.getName());
         customer.setNumDocument(request.getNumDocument());
-        customer.setCodTypeDocument(request.getCodTypeDocument());
         customer.setCodTypeCustomer(request.getCodTypeCustomer());
-
+        customer.setDesTypeCustomer(ParametrosDataDummy.getData().get("01")
+                .stream()
+                .filter(param -> param.getCode().equals(request.getCodTypeCustomer()))
+                .map(param -> param.getDescription())
+                .findFirst()
+                .orElse(""));
         return customer;
 
     }
@@ -108,15 +123,17 @@ public class CustomerServiceImpl implements CustomerService {
                 .id(customer.getId())
                 .name(customer.getName())
                 .numDocument(customer.getNumDocument())
-                .codTypeDocument(customer.getCodTypeDocument())
                 .codTypeCustomer(customer.getCodTypeCustomer())
+                .desTypeCustomer(customer.getDesTypeCustomer())
                 .build();
     }
 
-    private Flux<CustomerResponse> mapEntityToResponse(Flux<Customer> listCustomers) {
+    private List<CustomerResponse> mapEntityToResponse(List<Customer> listCustomers) {
 
-        return listCustomers.map(this::mapEntityToResponse);
-
+        return listCustomers
+                .stream()
+                .map(customer -> mapEntityToResponse(customer))
+                .collect(Collectors.toList());
 
     }
 

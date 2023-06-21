@@ -1,6 +1,7 @@
 package com.bank.service.impl;
 
 import com.bank.enums.TypeService;
+import com.bank.enums.TypeTransaction;
 import com.bank.exception.AttributeException;
 import com.bank.models.entity.Product;
 import com.bank.models.entity.Transaction;
@@ -56,12 +57,33 @@ public class TransactionServiceImpl implements TransactionService {
                     ProductRule productRule = BussinessRules.getRule(product.getCodTypeService());
 
                     if (lista.size() < productRule.getNumTrans() && lista.size() < productRule.getLimitMaxTrans()) {
-                        return Single.fromPublisher(transactionRepository.save(transaction));
+
+                        updateInMemoryProduct(product, transaction.getCodTypeTransaction(), transaction.getAmount());
+
+                        if (product.getBalance() >= 0.0) {
+                            return Single.fromPublisher(productRepository.save(product))
+                                    .flatMap(product1 -> {
+                                        return Single.fromPublisher(transactionRepository.save(transaction));
+                                    });
+                        } else {
+                            return Single.error(new AttributeException("Monto en transaccion no aplicable"));
+                        }
+
+
                     } else {
                         return Single.error(new AttributeException("operacion no disponible"));
                     }
 
                 });
         return response;
+    }
+
+    private Product updateInMemoryProduct(Product product, String typeTransaction, double amount) {
+        if (typeTransaction.equals(TypeTransaction.DEPOSITO)) {
+            product.setBalance(product.getBalance() + amount);
+        } else {
+            product.setBalance(product.getBalance() - amount);
+        }
+        return product;
     }
 }

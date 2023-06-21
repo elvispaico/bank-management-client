@@ -16,12 +16,12 @@ public class ParametrosDataDummy {
            new ParameterDetail("02","Empresarial")
         ));
         data.put("02", List.of(
-                new ParameterDetail("01", "CB-Cuenta Ahorro"),
-                new ParameterDetail("02", "CB-Cuenta Corriente"),
-                new ParameterDetail("03", "CB-Cuenta Plazo Fijo"),
-                new ParameterDetail("04", "CR-Personal"),
-                new ParameterDetail("05", "CR-Empresarial"),
-                new ParameterDetail("06", "CR-Tarjeta Credito"))
+                new ParameterDetail("01", "Cuenta Ahorro"),
+                new ParameterDetail("02", "Cuenta Corriente"),
+                new ParameterDetail("03", "Cuenta Plazo Fijo"),
+                new ParameterDetail("04", "Credito Personal"),
+                new ParameterDetail("05", "Credito Empresarial"),
+                new ParameterDetail("06", "Tarjeta Credito"))
         );
     }
 
