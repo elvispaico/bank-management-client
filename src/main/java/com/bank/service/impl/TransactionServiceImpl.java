@@ -79,7 +79,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private Product updateInMemoryProduct(Product product, String typeTransaction, double amount) {
-        if (typeTransaction.equals(TypeTransaction.DEPOSITO)) {
+        if (typeTransaction.equals(TypeTransaction.DEPOSITO.getValue())) {
             product.setBalance(product.getBalance() + amount);
         } else {
             product.setBalance(product.getBalance() - amount);
