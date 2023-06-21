@@ -28,11 +28,22 @@ public class ProductServiceImpl implements ProductService {
         singleCustomer.subscribe(
                 customer -> {
                     if (isCustomerPersonal(customer.getCodTypeCustomer())) {
-                        saveCustomerPersonal(customer, request);
+                        saveProductCustomerPersonal(customer, request);
+                    } else {
+                        saveProductCustomerBussines(request);
                     }
                 },
                 err -> System.out.println("error")
         );
+    }
+
+
+    private void saveProductCustomerBussines(Product request) throws AttributeException {
+        if (isVerifyCustomerBussinessAccountSuccess(request)) {
+            productRepository.save(request).subscribe();
+        } else {
+            throw new AttributeException("servicio no disponible para cliente");
+        }
     }
 
     /**
@@ -41,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
      * @param customer
      * @param request
      */
-    private void saveCustomerPersonal(Customer customer, Product request) {
+    private void saveProductCustomerPersonal(Customer customer, Product request) {
         Observable.fromPublisher(productRepository.findByCustomer(request.getIdCustomer()))
                 .filter(product -> product.getCodTypeService().equals(request.getCodTypeService()))
                 .isEmpty()
@@ -88,4 +99,13 @@ public class ProductServiceImpl implements ProductService {
                 || codTypeService.equals(TypeService.FIXEDTERM.getValue());
     }
 
+    /**
+     * Metodo que verifica que un cliente empresarial solo puede guardar cuentas corrientes
+     *
+     * @param request
+     * @return
+     */
+    private boolean isVerifyCustomerBussinessAccountSuccess(Product request) {
+        return request.getCodTypeService().equals(TypeService.CURRENT.getValue());
+    }
 }

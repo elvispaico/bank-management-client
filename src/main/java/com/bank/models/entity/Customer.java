@@ -19,5 +19,6 @@ public class Customer {
     private String name;
     private String numDocument;
     private String codTypeDocument;
+    //tipo de clientes : personal:01|empresarial:02
     private String codTypeCustomer;
 }
