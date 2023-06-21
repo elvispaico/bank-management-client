@@ -5,5 +5,7 @@ import io.reactivex.rxjava3.core.Single;
 
 public interface ProductService {
 
-    void save(Product request);
+    Single<Product> save(Product request);
+
+    Single<Product> findById(String id);
 }

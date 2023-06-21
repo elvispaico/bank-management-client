@@ -21,28 +21,30 @@ public class ProductServiceImpl implements ProductService {
     private final CustomerRepository customerRepository;
 
     @Override
-    public void save(Product request) {
+    public Single<Product> save(Product request) {
 
-        var singleCustomer = Single.fromPublisher(customerRepository.findById(request.getIdCustomer()));
-
-        singleCustomer.subscribe(
-                customer -> {
+        var singleCustomer = Single.fromPublisher(customerRepository.findById(request.getIdCustomer()))
+                .flatMap(customer -> {
                     if (isCustomerPersonal(customer.getCodTypeCustomer())) {
-                        saveProductCustomerPersonal(customer, request);
+                        return saveProductCustomerPersonal(customer, request);
                     } else {
-                        saveProductCustomerBussines(request);
+                        return saveProductCustomerBussines(request);
                     }
-                },
-                err -> new Exception("errorrrrrr")
-        );
+                });
+
+        return singleCustomer;
     }
 
+    @Override
+    public Single<Product> findById(String id) {
+        return Single.fromPublisher(productRepository.findById(id));
+    }
 
-    private void saveProductCustomerBussines(Product request) throws AttributeException {
+    private Single<Product> saveProductCustomerBussines(Product request) throws AttributeException {
         if (isVerifyCustomerBussinessAccountSuccess(request)) {
-            productRepository.save(request).subscribe();
+            return Single.fromPublisher(productRepository.save(request));
         } else {
-            throw new AttributeException("servicio no disponible para cliente");
+            return Single.error(new AttributeException("Operacion no disponible"));
         }
     }
 
@@ -52,21 +54,19 @@ public class ProductServiceImpl implements ProductService {
      * @param customer
      * @param request
      */
-    private void saveProductCustomerPersonal(Customer customer, Product request) {
-        Observable.fromPublisher(productRepository.findByCustomer(request.getIdCustomer()))
+    private Single<Product> saveProductCustomerPersonal(Customer customer, Product request) {
+        var response = Observable.fromPublisher(productRepository.findByCustomer(request.getIdCustomer()))
                 .filter(product -> product.getCodTypeService().equals(request.getCodTypeService()))
                 .isEmpty()
-                .subscribe(
-                        isDataEmpty -> {
-                            if (isDataEmpty && isVerifyCommissionSuccess(request)) {
-                                productRepository.save(request).subscribe();
-                            } else {
-                                throw new AttributeException("cliente ya existe o comision incorrecta");
-                            }
+                .flatMap(isValue -> {
+                    if (isValue && isVerifyCommissionSuccess(request)) {
+                        return Single.fromPublisher(productRepository.save(request));
+                    } else {
+                        return Single.error(new AttributeException("Operacion no disponible"));
+                    }
 
-                        }
-                );
-
+                });
+        return response;
     }
 
     private boolean isVerifyCommissionSuccess(Product request) {

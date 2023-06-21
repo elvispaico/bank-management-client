@@ -1,6 +1,7 @@
 package com.bank.controller;
 
 import com.bank.models.request.CustomerSaveRequest;
+import com.bank.models.response.CustomerProductResponse;
 import com.bank.models.response.CustomerResponse;
 import com.bank.models.response.MessageResponse;
 import com.bank.service.CustomerService;
@@ -9,6 +10,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,13 +32,19 @@ public class CustomerController {
 
     }
 
-    @GetMapping( value = "/{id}")
+    @GetMapping(value = "/{id}")
     public Single<CustomerResponse> findById(@PathVariable String id) {
         return customerService.findById(id);
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
     public Observable<CustomerResponse> findAll() {
         return customerService.findAllCustomers();
+    }
+
+
+    @GetMapping(value = "/{idCustomer}/products")
+    public Single<CustomerProductResponse> findCustomerWithProducts(@PathVariable String idCustomer) {
+        return customerService.findCustomerWhitProducts(idCustomer);
     }
 }
