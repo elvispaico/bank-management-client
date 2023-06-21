@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
                         saveProductCustomerBussines(request);
                     }
                 },
-                err -> System.out.println("error")
+                err -> new Exception("errorrrrrr")
         );
     }
 

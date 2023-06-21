@@ -1,5 +1,6 @@
 package com.bank.service.impl;
 
+import com.bank.exception.AttributeException;
 import com.bank.models.entity.Customer;
 import com.bank.models.request.CustomerSaveRequest;
 import com.bank.models.response.CustomerResponse;
@@ -10,6 +11,7 @@ import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @Service
@@ -19,7 +21,18 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Single<Customer> save(CustomerSaveRequest request) {
-        return Single.fromPublisher(customerRepository.save(mapRequestToEntity(request)));
+
+        var response = customerRepository.findByNumDocument(request.getNumDocument())
+                .hasElement()
+                .flatMap(customerExists -> {
+                    if (customerExists) {
+                        return Mono.error(new AttributeException("customer exists"));
+                    } else {
+                        return customerRepository.save(mapRequestToEntity(request));
+                    }
+                });
+
+        return Single.fromPublisher(response);
     }
 
     @Override
