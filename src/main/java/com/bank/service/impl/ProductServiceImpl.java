@@ -41,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private Single<Product> saveProductCustomerBussines(Product request) throws AttributeException {
-        if (isVerifyCustomerBussinessAccountSuccess(request)) {
+        if (isVerifyCustomerBussinessAccountSuccess(request) && isVerifyCommissionSuccess(request)) {
             return Single.fromPublisher(productRepository.save(request));
         } else {
             return Single.error(new AttributeException("Operacion no disponible"));
@@ -80,8 +80,8 @@ public class ProductServiceImpl implements ProductService {
 
         if (isTypeServiceWhitCeroCommision(request.getCodTypeService())) {
             return request.getCommission() == 0.0;
-        } else if (request.getCodTypeService().equals(TypeService.CURRENT.getValue())){
-            return  request.getCommission() > 0.0;
+        } else if (request.getCodTypeService().equals(TypeService.CURRENT.getValue())) {
+            return request.getCommission() > 0.0;
         }
 
         return true;
