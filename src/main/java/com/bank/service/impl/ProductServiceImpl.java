@@ -69,12 +69,22 @@ public class ProductServiceImpl implements ProductService {
         return response;
     }
 
+    /**
+     * Metodo que verifica si el monto de la comision es correcta
+     * para el producto que se esta intentando guardar
+     *
+     * @param request
+     * @return
+     */
     private boolean isVerifyCommissionSuccess(Product request) {
+
         if (isTypeServiceWhitCeroCommision(request.getCodTypeService())) {
             return request.getCommission() == 0.0;
-        } else {
-            return true;
+        } else if (request.getCodTypeService().equals(TypeService.CURRENT.getValue())){
+            return  request.getCommission() > 0.0;
         }
+
+        return true;
     }
 
     /**
