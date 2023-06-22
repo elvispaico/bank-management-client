@@ -11,11 +11,14 @@ public interface TransactionRepository extends ReactiveCrudRepository<Transactio
     /**
      * Metodo que busca las transaciones o movimientos que ha realizado
      * un cliente desde un intervalo de fechas
-     * @param firsDate Fecha Inicio
-     * @param lastDate Fecha Fin
+     *
+     * @param firsDate  Fecha Inicio
+     * @param lastDate  Fecha Fin
      * @param idProduct Id Producto
      * @return
      */
     @Query("{ 'feTransaction': { $gte: ?0, $lte: ?1 }, 'idProduct': ?2  }")
     Flux<Transaction> findByFeTransaction(LocalDate firsDate, LocalDate lastDate, String idProduct);
+
+    Flux<Transaction> findAllByIdProduct(String idProduct);
 }

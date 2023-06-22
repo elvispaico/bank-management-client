@@ -1,6 +1,7 @@
 package com.bank.service.impl;
 
 import com.bank.exception.AttributeException;
+import com.bank.exception.ResourceNotFoundException;
 import com.bank.models.entity.Customer;
 import com.bank.models.request.CustomerSaveRequest;
 import com.bank.models.response.CustomerProductResponse;
@@ -13,6 +14,7 @@ import com.bank.service.mapper.ProductMapper;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -22,6 +24,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
+    private final ReactiveMongoTemplate reactiveMongoTemplate;
 
     @Override
     public Single<Customer> save(CustomerSaveRequest request) {
@@ -42,7 +45,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Single<CustomerResponse> findById(String id) {
         return Single.fromPublisher(customerRepository.findById(id))
-                .map(CustomerMapper::mapCustomerToCustomerResponse);
+                .map(CustomerMapper::mapCustomerToCustomerResponse)
+                .onErrorResumeNext(error -> Single.error(new ResourceNotFoundException("cliente no encontrado")));
     }
 
     @Override
@@ -58,7 +62,6 @@ public class CustomerServiceImpl implements CustomerService {
                 .toObservable()
                 .flatMap(customerResponses -> Observable.fromIterable(customerResponses));
 
-//        return Observable.fromPublisher(mapEntityToResponse(customerRepository.findAll()));
     }
 
     @Override

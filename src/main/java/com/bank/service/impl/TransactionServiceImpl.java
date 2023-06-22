@@ -1,6 +1,5 @@
 package com.bank.service.impl;
 
-import com.bank.enums.TypeService;
 import com.bank.enums.TypeTransaction;
 import com.bank.exception.AttributeException;
 import com.bank.models.entity.Product;
@@ -76,6 +75,11 @@ public class TransactionServiceImpl implements TransactionService {
 
                 });
         return response;
+    }
+
+    @Override
+    public Observable<Transaction> findAllByIdProduct(String idProduct) {
+        return Observable.fromPublisher(transactionRepository.findAllByIdProduct(idProduct));
     }
 
     private Product updateInMemoryProduct(Product product, String typeTransaction, double amount) {

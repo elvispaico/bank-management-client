@@ -2,12 +2,10 @@ package com.bank.controller;
 
 import com.bank.models.entity.Transaction;
 import com.bank.service.TransactionService;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -21,4 +19,8 @@ public class TransactionController {
         return transactionService.save(request);
     }
 
+    @GetMapping("/product/{idProduct}")
+    public Observable<Transaction> findAllTransactionsByProduct(@PathVariable String idProduct) {
+        return transactionService.findAllByIdProduct(idProduct);
+    }
 }
