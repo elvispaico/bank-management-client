@@ -33,7 +33,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .hasElement()
                 .flatMap(customerExists -> {
                     if (customerExists) {
-                        return Mono.error(new AttributeException("Cliente ya existe"));
+                        return Mono.error(new AttributeException("Customer exists"));
                     } else {
                         return customerRepository.save(CustomerMapper.mapRequestToEntity(request));
                     }
@@ -46,7 +46,7 @@ public class CustomerServiceImpl implements CustomerService {
     public Single<CustomerResponse> findById(String id) {
         return Single.fromPublisher(customerRepository.findById(id))
                 .map(CustomerMapper::mapCustomerToCustomerResponse)
-                .onErrorResumeNext(error -> Single.error(new ResourceNotFoundException("cliente no encontrado")));
+                .onErrorResumeNext(error -> Single.error(new ResourceNotFoundException("Customer not found")));
     }
 
     @Override

@@ -3,11 +3,13 @@ package com.bank.service.impl;
 import com.bank.enums.TypeCustomer;
 import com.bank.enums.TypeService;
 import com.bank.exception.AttributeException;
+import com.bank.exception.ResourceNotFoundException;
 import com.bank.models.entity.Customer;
 import com.bank.models.entity.Product;
 import com.bank.repository.CustomerRepository;
 import com.bank.repository.ProductRepository;
 import com.bank.service.ProductService;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +24,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Single<Product> save(Product request) {
-
-        var singleCustomer = Single.fromPublisher(customerRepository.findById(request.getIdCustomer()))
+        var response = Maybe.fromPublisher(customerRepository.findById(request.getIdCustomer()))
+                .switchIfEmpty(Single.error(new ResourceNotFoundException("Customer not found")))
                 .flatMap(customer -> {
                     if (isCustomerPersonal(customer.getCodTypeCustomer())) {
                         return saveProductCustomerPersonal(customer, request);
@@ -32,7 +34,7 @@ public class ProductServiceImpl implements ProductService {
                     }
                 });
 
-        return singleCustomer;
+        return response;
     }
 
     @Override
@@ -48,34 +50,25 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    /**
-     * Metodo para guardar cliente personal
-     *
-     * @param customer
-     * @param request
-     */
     private Single<Product> saveProductCustomerPersonal(Customer customer, Product request) {
         var response = Observable.fromPublisher(productRepository.findByCustomer(request.getIdCustomer()))
                 .filter(product -> product.getCodTypeService().equals(request.getCodTypeService()))
                 .isEmpty()
                 .flatMap(isValue -> {
-                    if (isValue && isVerifyCommissionSuccess(request)) {
-                        return Single.fromPublisher(productRepository.save(request));
+                    if (isValue) {
+                        if (isVerifyCommissionSuccess(request)) {
+                            return Single.fromPublisher(productRepository.save(request));
+                        } else {
+                            return Single.error(new AttributeException("Invalid commission"));
+                        }
                     } else {
-                        return Single.error(new AttributeException("Operacion no disponible"));
+                        return Single.error(new AttributeException("Client already has registered accounts"));
                     }
 
                 });
         return response;
     }
 
-    /**
-     * Metodo que verifica si el monto de la comision es correcta
-     * para el producto que se esta intentando guardar
-     *
-     * @param request
-     * @return
-     */
     private boolean isVerifyCommissionSuccess(Product request) {
 
         if (isTypeServiceWhitCeroCommision(request.getCodTypeService())) {

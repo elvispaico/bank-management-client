@@ -2,6 +2,7 @@ package com.bank.service.impl;
 
 import com.bank.enums.TypeTransaction;
 import com.bank.exception.AttributeException;
+import com.bank.exception.ResourceNotFoundException;
 import com.bank.models.entity.Product;
 import com.bank.models.entity.Transaction;
 import com.bank.repository.ProductRepository;
@@ -9,6 +10,7 @@ import com.bank.repository.TransactionRepository;
 import com.bank.service.TransactionService;
 import com.bank.util.BussinessRules;
 import com.bank.util.ProductRule;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +29,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Single<Transaction> save(Transaction transaction) {
 
-        var productSingle = Single.fromPublisher(productRepository.findById(transaction.getIdProduct()));
-
-        var response = productSingle.
-                flatMap(product -> {
+        var response = Maybe.fromPublisher(productRepository.findById(transaction.getIdProduct()))
+                .switchIfEmpty(Single.error(new ResourceNotFoundException("Product no found")))
+                .flatMap(product -> {
                     return saveTransaction(product, transaction);
                 });
 
@@ -65,12 +66,12 @@ public class TransactionServiceImpl implements TransactionService {
                                         return Single.fromPublisher(transactionRepository.save(transaction));
                                     });
                         } else {
-                            return Single.error(new AttributeException("Monto en transaccion no aplicable"));
+                            return Single.error(new AttributeException("Invalid amount"));
                         }
 
 
                     } else {
-                        return Single.error(new AttributeException("operacion no disponible"));
+                        return Single.error(new AttributeException("You have exceeded the number of transactions"));
                     }
 
                 });
