@@ -2,6 +2,7 @@ package com.bank.service;
 
 import com.bank.models.entity.Customer;
 import com.bank.models.request.CustomerSaveRequest;
+import com.bank.models.request.CustomerUpdateRequest;
 import com.bank.models.response.CustomerProductResponse;
 import com.bank.models.response.CustomerResponse;
 import io.reactivex.rxjava3.core.Observable;
@@ -15,6 +16,14 @@ public interface CustomerService {
      * @return
      */
     Single<Customer> save(CustomerSaveRequest request);
+
+    /**
+     * Metodo para actualizar datos del cliente, solo nombre
+     *
+     * @param request
+     * @return
+     */
+    Single<Customer> update(CustomerUpdateRequest request, String idCustomer);
 
     /**
      * Metodo que busca un cliente por el ID, que representa la

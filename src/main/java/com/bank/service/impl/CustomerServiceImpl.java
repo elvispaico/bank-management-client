@@ -4,6 +4,7 @@ import com.bank.exception.AttributeException;
 import com.bank.exception.ResourceNotFoundException;
 import com.bank.models.entity.Customer;
 import com.bank.models.request.CustomerSaveRequest;
+import com.bank.models.request.CustomerUpdateRequest;
 import com.bank.models.response.CustomerProductResponse;
 import com.bank.models.response.CustomerResponse;
 import com.bank.repository.CustomerRepository;
@@ -11,6 +12,7 @@ import com.bank.repository.ProductRepository;
 import com.bank.service.CustomerService;
 import com.bank.service.mapper.CustomerMapper;
 import com.bank.service.mapper.ProductMapper;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,16 @@ public class CustomerServiceImpl implements CustomerService {
                 });
 
         return Single.fromPublisher(response);
+    }
+
+    @Override
+    public Single<Customer> update(CustomerUpdateRequest request, String idCustomer) {
+        return Maybe.fromPublisher(customerRepository.findById(idCustomer))
+                .switchIfEmpty(Single.error(new ResourceNotFoundException("Customer not found")))
+                .flatMap(customer -> {
+                    customer.setName(request.getName());
+                    return Single.fromPublisher(customerRepository.save(customer));
+                });
     }
 
     @Override

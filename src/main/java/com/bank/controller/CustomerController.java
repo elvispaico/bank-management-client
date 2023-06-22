@@ -1,13 +1,14 @@
 package com.bank.controller;
 
+import com.bank.models.entity.Customer;
 import com.bank.models.request.CustomerSaveRequest;
+import com.bank.models.request.CustomerUpdateRequest;
 import com.bank.models.response.CustomerProductResponse;
 import com.bank.models.response.CustomerResponse;
 import com.bank.models.response.MessageResponse;
 import com.bank.service.CustomerService;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,12 +25,19 @@ public class CustomerController {
     @PostMapping
     public Single<ResponseEntity<MessageResponse>> save(@RequestBody CustomerSaveRequest request) {
         return customerService.save(request)
-                .subscribeOn(Schedulers.io())
                 .map(value -> new ResponseEntity<>(
                         new MessageResponse(HttpStatus.CREATED.value(), "Customer save success"),
                         HttpStatus.CREATED)
                 );
+    }
 
+    @PutMapping(value = "/{id}")
+    public Single<ResponseEntity<MessageResponse>> update(@PathVariable String id, @RequestBody CustomerUpdateRequest request) {
+        return customerService.update(request, id)
+                .map(value -> new ResponseEntity<>(
+                        new MessageResponse(HttpStatus.CREATED.value(), "Customer save success"),
+                        HttpStatus.OK)
+                );
     }
 
     @GetMapping(value = "/{id}")
