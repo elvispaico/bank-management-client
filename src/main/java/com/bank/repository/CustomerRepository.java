@@ -11,6 +11,12 @@ import java.util.Optional;
 @Repository
 public interface CustomerRepository extends ReactiveCrudRepository<Customer, String> {
 
+    /**
+     * Metodo para buscar un cliente por el numero de documento
+     *
+     * @param numDocument
+     * @return
+     */
     Mono<Customer> findByNumDocument(String numDocument);
 
 }

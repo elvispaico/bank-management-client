@@ -18,7 +18,7 @@ public class TransactionController {
 
     @PostMapping
     public Single<Transaction> save(@RequestBody Transaction request) {
-        return transactionService.registerTransactionAccount(request);
+        return transactionService.save(request);
     }
 
 }

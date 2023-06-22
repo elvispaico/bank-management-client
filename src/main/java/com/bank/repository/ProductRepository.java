@@ -7,6 +7,12 @@ import reactor.core.publisher.Flux;
 
 public interface ProductRepository extends ReactiveCrudRepository<Product, String> {
 
+    /**
+     * Metodo que busca un producto por ID,
+     * usando query basado en mongodb
+     * @param idCustomer
+     * @return
+     */
     @Query("{'idCustomer' :  ?0 }")
     Flux<Product> findByCustomer(String idCustomer);
 

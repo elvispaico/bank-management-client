@@ -26,7 +26,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final ProductRepository productRepository;
 
     @Override
-    public Single<Transaction> registerTransactionAccount(Transaction transaction) {
+    public Single<Transaction> save(Transaction transaction) {
 
         var productSingle = Single.fromPublisher(productRepository.findById(transaction.getIdProduct()));
 

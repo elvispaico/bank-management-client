@@ -5,5 +5,12 @@ import io.reactivex.rxjava3.core.Single;
 
 public interface TransactionService {
 
-    Single<Transaction> registerTransactionAccount(Transaction transaction);
+    /**
+     * Metodo que guarda un transaccion para un determinado
+     * producto
+     *
+     * @param transaction
+     * @return
+     */
+    Single<Transaction> save(Transaction transaction);
 }
