@@ -5,6 +5,7 @@ import com.bank.service.TransactionService;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class TransactionController {
         return transactionService.save(request);
     }
 
-    @GetMapping("/product/{idProduct}")
+    @GetMapping(value = "/product/{idProduct}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Observable<Transaction> findAllTransactionsByProduct(@PathVariable String idProduct) {
         return transactionService.findAllByIdProduct(idProduct);
     }

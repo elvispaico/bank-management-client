@@ -40,7 +40,7 @@ public interface CustomerService {
      *
      * @return
      */
-    Observable<CustomerResponse> findAllCustomers();
+    Observable<Customer> findAllCustomers();
 
     /**
      * Metodos que busca un cliente porel ID, en la consulta

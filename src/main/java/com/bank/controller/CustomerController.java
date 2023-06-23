@@ -40,13 +40,13 @@ public class CustomerController {
                 );
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Single<CustomerResponse> findById(@PathVariable String id) {
         return customerService.findById(id);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
-    public Observable<CustomerResponse> findAll() {
+    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Observable<Customer> findAll() {
         return customerService.findAllCustomers();
     }
 

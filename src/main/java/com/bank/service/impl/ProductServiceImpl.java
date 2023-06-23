@@ -39,7 +39,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Single<Product> findById(String id) {
-        return Single.fromPublisher(productRepository.findById(id));
+        return Maybe.fromPublisher(productRepository.findById(id))
+                .switchIfEmpty(Single.error(new ResourceNotFoundException("product not found")));
     }
 
     private Single<Product> saveProductCustomerBussines(Product request) throws AttributeException {

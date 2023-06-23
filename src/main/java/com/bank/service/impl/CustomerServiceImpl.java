@@ -62,9 +62,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Observable<CustomerResponse> findAllCustomers() {
-
-        var response = Observable.fromPublisher(customerRepository.findAll())
+    public Observable<Customer> findAllCustomers() {
+        return Observable.fromPublisher(customerRepository.findAll());
+     /*   var response = Observable.fromPublisher(customerRepository.findAll())
                 .toList()
                 .flatMap(customers -> {
                     return Single.just(CustomerMapper.mapListCustomerToLisCustomerResponse(customers));
@@ -72,7 +72,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         return response
                 .toObservable()
-                .flatMap(customerResponses -> Observable.fromIterable(customerResponses));
+                .flatMap(customerResponses -> Observable.fromIterable(customerResponses));*/
 
     }
 
