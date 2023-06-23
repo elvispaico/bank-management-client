@@ -5,4 +5,6 @@ spring:
     mongodb:
       uri: mongodb+srv://elvis:romulo22@cluster0.wkhua.mongodb.net/bootcamp-bank
       database: bootcamp-bank
-
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher

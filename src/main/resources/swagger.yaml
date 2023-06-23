@@ -1,0 +1,104 @@
+openapi: 3.0.3
+info:
+  title: Bootcamp Api Bank- OpenAPI 3.0
+  description: |-
+    Api Spring boot para adminstracion de entidad bancaria
+
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: epaicaca@nttdata.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: https://localhost:8081/api/bank
+tags:
+  - name: customer
+    description: Administracion de clientes
+
+paths:
+  /customers:
+    get:
+      tags:
+        - customer
+      summary: Obtener todos los clientes
+      description: Devuelve una lista de clientes
+      operationId: findAllCustomer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+    post:
+      tags:
+        - customer
+      summary: Guardar Cliente
+      description: Guarda un cliente personal o empresarial
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerSaveRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        numDocument:
+          type: string
+        codTypeCustomer:
+          type: string
+        desTypeCustomer:
+          type: string
+
+    CustomerSaveRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        numDocument:
+          type: string
+        codTypeCustomer:
+          type: string
+        desTypeCustomer:
+          type: string
+
+    MessageResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
