@@ -6,7 +6,6 @@ import com.bank.models.entity.Customer;
 import com.bank.models.request.CustomerSaveRequest;
 import com.bank.models.request.CustomerUpdateRequest;
 import com.bank.models.response.CustomerProductResponse;
-import com.bank.models.response.CustomerResponse;
 import com.bank.repository.CustomerRepository;
 import com.bank.repository.ProductRepository;
 import com.bank.service.CustomerService;
@@ -55,10 +54,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Single<CustomerResponse> findById(String id) {
-        return Single.fromPublisher(customerRepository.findById(id))
-                .map(CustomerMapper::mapCustomerToCustomerResponse)
-                .onErrorResumeNext(error -> Single.error(new ResourceNotFoundException("Customer not found")));
+    public Maybe<Customer> findById(String id) {
+        return Maybe.fromPublisher(customerRepository.findById(id))
+                .switchIfEmpty(Maybe.error(() -> new ResourceNotFoundException("Customer not found")))
+                .flatMap(customer -> Maybe.just(customer));
     }
 
     @Override

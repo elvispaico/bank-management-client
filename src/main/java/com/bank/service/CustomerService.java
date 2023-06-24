@@ -5,6 +5,7 @@ import com.bank.models.request.CustomerSaveRequest;
 import com.bank.models.request.CustomerUpdateRequest;
 import com.bank.models.response.CustomerProductResponse;
 import com.bank.models.response.CustomerResponse;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 
@@ -32,7 +33,7 @@ public interface CustomerService {
      * @param id
      * @return
      */
-    Single<CustomerResponse> findById(String id);
+    Maybe<Customer> findById(String id);
 
 
     /**

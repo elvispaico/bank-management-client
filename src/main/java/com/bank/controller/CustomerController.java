@@ -7,6 +7,7 @@ import com.bank.models.response.CustomerProductResponse;
 import com.bank.models.response.CustomerResponse;
 import com.bank.models.response.MessageResponse;
 import com.bank.service.CustomerService;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +41,8 @@ public class CustomerController {
                 );
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Single<CustomerResponse> findById(@PathVariable String id) {
+    @GetMapping(value = "/{id}")
+    public Maybe<Customer> findById(@PathVariable String id) {
         return customerService.findById(id);
     }
 
