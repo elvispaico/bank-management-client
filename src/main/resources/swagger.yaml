@@ -19,6 +19,55 @@ tags:
 
 paths:
   /customers:
+
+    post:
+      tags:
+        - customer
+      summary: Guardar Cliente
+      description: Guarda un cliente personal o empresarial
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerSaveRequest'
+            example:
+              name: "Pedro Merino"
+              numDocument: "23232323"
+              codTypeCustomer: "01"
+              desTypeCustomer: "Personal"
+
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                code: 200
+                message: Customer save success
+
+    put:
+      tags:
+        - customer
+      summary: Actualizar Cliente
+      description: Actualiza el nombre y el documento de un cliente
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerUpdateRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                code: 200
+                message: Customer save success
+
     get:
       tags:
         - customer
@@ -34,23 +83,27 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Customer'
-    post:
+
+  /customers/{id}:
+    get:
       tags:
         - customer
-      summary: Guardar Cliente
-      description: Guarda un cliente personal o empresarial
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CustomerSaveRequest'
+      summary: Busca Cliente por Id
+      description: Busca un cliente por su Id
+      parameters:
+        - name: id
+          in: path
+          description: Id de Cliente
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
+                $ref: '#/components/schemas/CustomerResponse'
 
 components:
   schemas:
@@ -77,6 +130,31 @@ components:
           type: string
         codTypeCustomer:
           type: string
+          enum:
+            - "01"
+            - "02"
+        desTypeCustomer:
+          type: string
+
+    CustomerUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        numDocument:
+          type: string
+
+    CustomerResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        numDocument:
+          type: string
+        codTypeCustomer:
+          type: string
         desTypeCustomer:
           type: string
 
@@ -87,18 +165,3 @@ components:
           type: integer
         message:
           type: string
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
