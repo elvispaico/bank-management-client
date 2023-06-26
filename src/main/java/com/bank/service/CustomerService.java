@@ -16,7 +16,7 @@ public interface CustomerService {
      * @param request Objeto para guardar solo los campos necesarios
      * @return
      */
-    Single<Customer> save(CustomerSaveRequest request);
+    Maybe<Customer> save(CustomerSaveRequest request);
 
     /**
      * Metodo para actualizar datos del cliente, solo nombre
@@ -24,7 +24,7 @@ public interface CustomerService {
      * @param request
      * @return
      */
-    Single<Customer> update(CustomerUpdateRequest request, String idCustomer);
+    Maybe<Customer> update(CustomerUpdateRequest request, String idCustomer);
 
     /**
      * Metodo que busca un cliente por el ID, que representa la

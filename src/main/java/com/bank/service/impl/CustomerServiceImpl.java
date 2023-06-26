@@ -17,7 +17,6 @@ import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @Service
@@ -28,28 +27,25 @@ public class CustomerServiceImpl implements CustomerService {
     private final ReactiveMongoTemplate reactiveMongoTemplate;
 
     @Override
-    public Single<Customer> save(CustomerSaveRequest request) {
+    public Maybe<Customer> save(CustomerSaveRequest request) {
 
-        var response = customerRepository.findByNumDocument(request.getNumDocument())
-                .hasElement()
-                .flatMap(customerExists -> {
-                    if (customerExists) {
-                        return Mono.error(new AttributeException("Customer exists"));
-                    } else {
-                        return customerRepository.save(CustomerMapper.mapRequestToEntity(request));
-                    }
-                });
-
-        return Single.fromPublisher(response);
+        return Maybe.fromPublisher(customerRepository.findByNumDocument(request.getNumDocument()))
+                .isEmpty()
+                .flatMap(existsCustomer -> {
+                    return existsCustomer ? Single.fromPublisher(customerRepository.save(CustomerMapper.mapRequestToEntity(request)))
+                            : Single.error(new AttributeException("Customer exists"));
+                })
+                .toMaybe();
     }
 
     @Override
-    public Single<Customer> update(CustomerUpdateRequest request, String idCustomer) {
+    public Maybe<Customer> update(CustomerUpdateRequest request, String idCustomer) {
         return Maybe.fromPublisher(customerRepository.findById(idCustomer))
-                .switchIfEmpty(Single.error(new ResourceNotFoundException("Customer not found")))
+                .switchIfEmpty(Maybe.error(new ResourceNotFoundException("Customer not found")))
                 .flatMap(customer -> {
                     customer.setName(request.getName());
-                    return Single.fromPublisher(customerRepository.save(customer));
+                    customer.setNumDocument(request.getNumDocument());
+                    return Maybe.fromPublisher(customerRepository.save(customer));
                 });
     }
 
@@ -63,16 +59,6 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Observable<Customer> findAllCustomers() {
         return Observable.fromPublisher(customerRepository.findAll());
-     /*   var response = Observable.fromPublisher(customerRepository.findAll())
-                .toList()
-                .flatMap(customers -> {
-                    return Single.just(CustomerMapper.mapListCustomerToLisCustomerResponse(customers));
-                });
-
-        return response
-                .toObservable()
-                .flatMap(customerResponses -> Observable.fromIterable(customerResponses));*/
-
     }
 
     @Override
