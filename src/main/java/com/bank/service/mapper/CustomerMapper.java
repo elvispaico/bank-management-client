@@ -1,5 +1,6 @@
 package com.bank.service.mapper;
 
+import com.bank.models.bean.ProfileCustomer;
 import com.bank.models.entity.Customer;
 import com.bank.models.request.CustomerSaveRequest;
 import com.bank.models.response.CustomerResponse;
@@ -31,6 +32,10 @@ public class CustomerMapper {
                 .map(param -> param.getDescription())
                 .findFirst()
                 .orElse(""));
+        customer.setProfile(ProfileCustomer.builder()
+                .codPerfil(request.getProfile().getCodPerfil())
+                .desPerfil(request.getProfile().getDesPerfil())
+                .build());
         return customer;
 
     }

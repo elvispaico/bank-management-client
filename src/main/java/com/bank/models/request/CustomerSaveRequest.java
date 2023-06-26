@@ -1,5 +1,6 @@
 package com.bank.models.request;
 
+import com.bank.models.bean.ProfileCustomer;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,4 +11,5 @@ public class CustomerSaveRequest {
     private String numDocument;
     private String codTypeCustomer;
     private String desTypeCustomer;
+    private ProfileCustomer profile;
 }

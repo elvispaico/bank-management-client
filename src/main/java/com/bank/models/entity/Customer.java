@@ -1,5 +1,6 @@
 package com.bank.models.entity;
 
+import com.bank.models.bean.ProfileCustomer;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,4 +22,5 @@ public class Customer {
     //tipo de clientes : personal:01|empresarial:02
     private String codTypeCustomer;
     private String desTypeCustomer;
+    private ProfileCustomer profile;
 }
