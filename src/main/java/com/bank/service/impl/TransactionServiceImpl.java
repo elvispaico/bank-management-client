@@ -9,6 +9,7 @@ import com.bank.repository.ProductRepository;
 import com.bank.repository.TransactionRepository;
 import com.bank.service.TransactionService;
 import com.bank.util.BussinessRules;
+import com.bank.util.ConstantUtil;
 import com.bank.util.ProductRule;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
@@ -58,18 +59,21 @@ public class TransactionServiceImpl implements TransactionService {
 
                     if (lista.size() < productRule.getNumTrans() && lista.size() < productRule.getLimitMaxTrans()) {
 
-                        updateInMemoryProduct(product, transaction.getCodTypeTransaction(), transaction.getAmount());
-
-                        if (product.getBalance() >= 0.0) {
-                            return Single.fromPublisher(productRepository.save(product))
-                                    .flatMap(product1 -> {
-                                        return Single.fromPublisher(transactionRepository.save(transaction));
-                                    });
-                        } else {
-                            return Single.error(new AttributeException("Invalid amount"));
-                        }
-
-
+                        return transactionRepository.countTransactionByIdProduct(product.getId())
+                                .flatMap(countTrans -> {
+                                    if (countTrans >= ConstantUtil.NUMBER_MAX_TRANSACCIONES_FREE) {
+                                        transaction.setCommission(ConstantUtil.MOUNT_COMMISSION_TRANSACTION);
+                                    }
+                                    updateProductInMemory(product, transaction);
+                                    if (product.getBalance() >= 0.0) {
+                                        return Single.fromPublisher(productRepository.save(product))
+                                                .flatMap(productSave -> {
+                                                    return Single.fromPublisher(transactionRepository.save(transaction));
+                                                });
+                                    } else {
+                                        return Single.error(new AttributeException("Invalid amount"));
+                                    }
+                                });
                     } else {
                         return Single.error(new AttributeException("You have exceeded the number of transactions"));
                     }
@@ -83,11 +87,11 @@ public class TransactionServiceImpl implements TransactionService {
         return Observable.fromPublisher(transactionRepository.findAllByIdProduct(idProduct));
     }
 
-    private Product updateInMemoryProduct(Product product, String typeTransaction, double amount) {
-        if (typeTransaction.equals(TypeTransaction.DEPOSITO.getValue())) {
-            product.setBalance(product.getBalance() + amount);
+    private Product updateProductInMemory(Product product, Transaction transaction) {
+        if (transaction.getCodTypeTransaction().equals(TypeTransaction.DEPOSITO.getValue())) {
+            product.setBalance(product.getBalance() + transaction.getAmount() - transaction.getCommission());
         } else {
-            product.setBalance(product.getBalance() - amount);
+            product.setBalance(product.getBalance() - transaction.getAmount() - transaction.getCommission());
         }
         return product;
     }

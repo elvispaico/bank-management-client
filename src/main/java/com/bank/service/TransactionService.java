@@ -22,4 +22,5 @@ public interface TransactionService {
      * @return
      */
     Observable<Transaction> findAllByIdProduct(String idProduct);
+
 }
