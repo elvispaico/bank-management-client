@@ -31,8 +31,8 @@ public class CustomerServiceImpl implements CustomerService {
 
         return Maybe.fromPublisher(customerRepository.findByNumDocument(request.getNumDocument()))
                 .isEmpty()
-                .flatMap(existsCustomer -> {
-                    return existsCustomer ? Single.fromPublisher(customerRepository.save(CustomerMapper.mapRequestToEntity(request)))
+                .flatMap(isEmpty -> {
+                    return isEmpty ? Single.fromPublisher(customerRepository.save(CustomerMapper.mapRequestToEntity(request)))
                             : Single.error(new AttributeException("Customer exists"));
                 })
                 .toMaybe();

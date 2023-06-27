@@ -7,6 +7,7 @@ public class BussinessRules {
                 .numTrans(10)
                 .limitMaxTrans(10)
                 .commision(0.0)
+                .numTransFree(20)
                 .build();
     }
 
@@ -15,6 +16,7 @@ public class BussinessRules {
                 .numTrans(10000)
                 .limitMaxTrans(10000)
                 .commision(10.0)
+                .numTransFree(20)
                 .build();
     }
 
@@ -23,6 +25,7 @@ public class BussinessRules {
                 .numTrans(1)
                 .limitMaxTrans(1)
                 .commision(0.0)
+                .numTransFree(20)
                 .build();
     }
 

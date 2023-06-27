@@ -20,4 +20,5 @@ public class Transaction {
     private String codTypeTransaction;
     private String desTypeTransaction;
     private double amount;
+    private double commission;
 }

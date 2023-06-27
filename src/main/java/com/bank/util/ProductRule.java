@@ -12,4 +12,5 @@ public class ProductRule {
     private int numTrans;
     private int limitMaxTrans;
     private double commision;
+    private int numTransFree;
 }
